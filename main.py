@@ -33,6 +33,7 @@ for epoch in range(0, 6000):
             _, topi = decoder_output.topk(1)
             decoder_input = torch.LongTensor([[topi[i][0] for i in range(batch_size)]]).to(device)
             decoder_hidden = decoder_hidden.detach()
+            encoder_hidden = encoder_hidden.detach()
             target = global_target[:,t]
             loss += criterion(decoder_output, target)
         print("Loss this epoch is {}".format(loss.item()/4))
