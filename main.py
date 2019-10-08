@@ -18,7 +18,6 @@ optimizer = optim.SGD(model.parameters(), lr=0.01)
 encoder_hidden = torch.zeros(2, 4,256).to(device)
 decoder_input  = torch.zeros(1, 4, 256).to(device)
 decoder_hidden = torch.zeros(1, 4, 256).to(device)
-input_variable = torch.zeros((100, 4)).long().to(device)
 X_train, Y_train = get_training_data(batch_size=4)
 for epoch in range(0, 6000):
     for iteration in range(X_train.shape[0]):
@@ -32,9 +31,8 @@ for epoch in range(0, 6000):
         for t in range(global_target.shape[1]):
             decoder_output, decoder_hidden = model.decoder(decoder_input, decoder_hidden, encoder_outputs)
             _, topi = decoder_output.topk(1)
-            decoder_input = torch.LongTensor([[topi[i][0] for i in range(batch_size)]])
+            decoder_input = torch.LongTensor([[topi[i][0] for i in range(batch_size)]]).to(device)
             decoder_hidden = decoder_hidden.detach()
-            encoder_hidden = encoder_hidden.detach()
             target = global_target[:,t]
             loss += criterion(decoder_output, target)
         print("Loss this epoch is {}".format(loss.item()/4))
