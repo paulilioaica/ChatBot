@@ -20,8 +20,7 @@ class EncoderRNN(nn.Module):
 
     def forward(self, x, hidden=None):
         embedded = self.embedding(x)
-        packed = nn.utils.rnn.pack_padded_sequence(embedded, lengths=torch.as_tensor([1, 4]).long(),
-                                                   enforce_sorted=False)
+        packed = nn.utils.rnn.pack_padded_sequence(embedded, lengths=torch.tensor([43,43,43,34]),enforce_sorted=False)
         outputs, hidden = self.gru(packed, hidden)
         outputs, _ = nn.utils.rnn.pad_packed_sequence(outputs)
         outputs = outputs[:, :, :self.hidden_size] + outputs[:, :, self.hidden_size:]
@@ -70,7 +69,7 @@ class DecoderRNN(nn.Module):
             input_step = self.embedding(input_step)
         output, hidden = self.gru(input_step, prev_hidden)
 
-        context, _ = self.attention(prev_hidden, encoder_outputs.transpose(0,1))
+        context, _ = self.attention(prev_hidden, encoder_outputs)
         output = output.squeeze(0)
         context = context.squeeze(0)
 
