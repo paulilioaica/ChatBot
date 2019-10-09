@@ -42,9 +42,11 @@ for epoch in range(0, 6000):
 
             loss += criterion(decoder_output, target)
         qna = []
-        for i in range(batch_size):
-            print('Answer was ' + ' '.join([vocab_words[word.item()] for word in full_answer[i]]))
-            print('Question was ' + ' '.join([vocab_words[word.item()] for word in input_variable[i]]))
+
+        if epoch % 500:
+            for i in range(batch_size):
+                print('Answer was ' + ' '.join([vocab_words[word.item()] for word in full_answer[i]]))
+                print('Question was ' + ' '.join([vocab_words[word.item()] for word in input_variable[i]]))
 
         print("Loss this epoch is {}".format(loss.item()/4))
         loss.backward()
