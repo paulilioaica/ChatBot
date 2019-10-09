@@ -17,8 +17,9 @@ def strip_word(word):
 
 def get_vocab(data):
     all_words = set([strip_word(word) for unpacked in data for sentance in unpacked for word in sentance.split()])
-    vocab = {word: i for i, word in enumerate(all_words)}
-    return vocab
+    vocab_idx= {word: i for i, word in enumerate(all_words)}
+    vocab_words = {i: word for i, word in enumerate(all_words)}
+    return vocab_idx, vocab_words
 
 
 def get_training_data(batch_size=1):
@@ -27,14 +28,12 @@ def get_training_data(batch_size=1):
     for key in training_dict:
         training_data.append(training_dict[key])
 
-    vocab = get_vocab(training_data)
+    vocab_idx, vocab_words = get_vocab(training_data)
     max_len_question = 43
-    print(len(vocab))
-
 
     for i in range(len(training_data)):
-        training_data[i][0] = [vocab[word] for word in strip_word(training_data[i][0]).split()]
-        training_data[i][1] = [vocab[word] for word in strip_word(training_data[i][1]).split()]
+        training_data[i][0] = [vocab_idx[word] for word in strip_word(training_data[i][0]).split()]
+        training_data[i][1] = [vocab_idx[word] for word in strip_word(training_data[i][1]).split()]
 
     training_count = len(training_data)
     if training_count % batch_size != 0:
@@ -43,13 +42,16 @@ def get_training_data(batch_size=1):
     X_train = np.zeros((total_batches, batch_size, max_len_question))
     Y_train = np.zeros((total_batches, batch_size, max_len_question))
     for i in range(0, total_batches):
-        q = [qna[0] + [0]*(max_len_question-len(qna[0])) for qna in training_data[i * batch_size:(i * batch_size + batch_size)]]
-        a = [qna[1] + [0]*(max_len_question-len(qna[1])) for qna in training_data[i * batch_size:(i * batch_size + batch_size)]]
+        q = [qna[0] + [0] * (max_len_question - len(qna[0])) for qna in
+             training_data[i * batch_size:(i * batch_size + batch_size)]]
+        a = [qna[1] + [0] * (max_len_question - len(qna[1])) for qna in
+             training_data[i * batch_size:(i * batch_size + batch_size)]]
 
         for number in range(batch_size):
             X_train[i][number] = q[number]
         for number in range(batch_size):
             Y_train[i][number] = a[number]
-    return X_train, Y_train
+    return X_train, Y_train, vocab_words
+
 
 get_training_data()
