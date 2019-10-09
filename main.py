@@ -19,7 +19,7 @@ encoder_hidden = torch.zeros(2, 4,256).to(device)
 decoder_input  = torch.zeros(1, 4, 256).to(device)
 decoder_hidden = torch.zeros(1, 4, 256).to(device)
 X_train, Y_train, vocab_words = get_training_data(batch_size=4)
-for epoch in range(0, 6000):
+for epoch in range(0, 600000):
     for iteration in range(X_train.shape[0]):
         input_variable = torch.tensor(X_train[iteration]).transpose(1,0).long().to(device)
         global_target = torch.tensor(Y_train[iteration]).long().to(device)
@@ -43,11 +43,10 @@ for epoch in range(0, 6000):
             loss += criterion(decoder_output, target)
         qna = []
 
-        if epoch % 500:
+        if epoch % 1000:
             for i in range(batch_size):
                 print('Answer was ' + ' '.join([vocab_words[word.item()] for word in full_answer[i]]))
                 print('Question was ' + ' '.join([vocab_words[word.item()] for word in input_variable[i]]))
-
-        print("Loss this epoch is {}".format(loss.item()/4))
+                print("Loss this epoch is {}".format(loss.item()/4))
         loss.backward()
         optimizer.step()
